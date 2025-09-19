@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Your custom CSS here */
+.the-title {
+    font-size: 2rem; /* Example custom style */
+    color: #1a202c; /* Example custom style */
+}
