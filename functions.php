@@ -1,5 +1,15 @@
 <?php
 /**
+ * Register navigation menus
+ */
+function laserred_register_menus() {
+    register_nav_menus([
+        'main-menu' => __('Main Menu', 'laserred'),
+    ]);
+}
+add_action('init', 'laserred_register_menus');
+
+/**
  * Add CORS headers for development
  */
 function laserred_add_cors_headers() {
@@ -88,3 +98,44 @@ function laserred_enqueue_assets() {
     }
 }
 add_action('wp_enqueue_scripts', 'laserred_enqueue_assets');
+
+/**
+ * Featured Image Support
+ */
+function laserred_setup_theme() {
+    add_theme_support('post-thumbnails');
+}
+add_action('after_setup_theme', 'laserred_setup_theme');
+
+/**
+ * Remove "Featured" option for other testimonials when new one is set
+ */
+function enforce_single_featured_post($post_id) {
+    // Check if this is our custom post type
+    if (get_post_type($post_id) !== 'testimonial') return;
+
+    $is_featured = get_field('featured_testimonial', $post_id);
+    if ($is_featured) {
+        // Get all other posts of this type
+        $args = array(
+            'post_type' => 'testimonial',
+            'post__not_in' => array($post_id),
+            'meta_query' => array(
+                array(
+                    'key' => 'featured_testimonial',
+                    'value' => '1',
+                    'compare' => '='
+                )
+            ),
+            'posts_per_page' => -1
+        );
+        $featured_posts = get_posts($args);
+
+        // Unset featured for all other posts
+        foreach ($featured_posts as $post) {
+            update_field('featured_testimonial', false, $post->ID);
+        }
+    }
+}
+add_action('acf/save_post', 'enforce_single_featured_post', 20);
+
