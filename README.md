@@ -33,6 +33,7 @@ A modern WordPress theme built with Tailwind CSS and Vite.
 - Node.js 16+
 - npm or yarn
 - WordPress 6.0+
+- ACF
 
 ## Development
 
